@@ -2,6 +2,7 @@ import os, sys
 from glob import glob
 import csv
 import numpy as np
+import re
 import cv2
 import torch
 import matplotlib.pyplot as plt
@@ -12,8 +13,11 @@ import argparse
 from multiprocessing import Process, Queue
 
 parser = argparse.ArgumentParser(description='Dataset analysis tool')
-parser.add_argument('filename', help='filename of image comparison data')
-parser.add_argument('-scan', action='store_true', help='calculate image differences')
+parser.add_argument('-filename', action='store', default=None, help='filename of image comparison data')
+parser.add_argument('-scan', action='store_true', help='list image dimensions')
+parser.add_argument('-resize', action='store', nargs='?', type=int, const=224, help='resize to specified size')
+parser.add_argument('-out', action='store', default='./ISIC/train-resized', help='location to output scaled images')
+
 parser.add_argument('-hist', action='store_true', help='show histogram of difference amounts')
 parser.add_argument('-bucket', action='store', type=int, help='set bucket size', default=10000 )
 parser.add_argument('-bucketmax', action='store', type=int, help='max bucket', default=1e6)
@@ -24,10 +28,39 @@ parser.add_argument('-resolve', action='store', default=None, help='write out co
 args = parser.parse_args()
 
 if args.scan:
-    filelist = [x for x in glob('./data/train_orig/*.tif') if not '_mask' in x]
+    filelist = [x for x in glob('./ISIC/train/ISIC_*.jpg')]
+    numfiles = len(filelist)
+    print('num files: %d' %numfiles)
 
-    print('num files: %d' % len(filelist))
+    if args.resize is not None:
+        if not os.path.exists(args.out):
+            os.mkdir(args.out)
 
+    csv = None
+    if args.filename is not None:
+        f = open(args.filename, 'w')
+        csv = csv.writer(f)
+
+    for i in range(numfiles):
+        print(i,end='\r')
+        img = cv2.imread(filelist[i])
+        imgno = re.match('.*ISIC_(\\d*)\\.jpg', filelist[i]).group(1)
+        label = cv2.imread('./ISIC/labels/ISIC_{}_segmentation.png'.format(imgno))
+
+        if csv is not None:
+            csv.writerow([imgno] + list(img.shape) + list(label.shape) + [img.shape[1]/img.shape[0]])
+
+        if args.resize is not None:
+            img = cv2.resize(img, dsize=(args.resize,args.resize), interpolation=cv2.INTER_CUBIC)
+            cv2.imwrite(os.path.join(args.out, '{}.png'.format(imgno)), img)
+            label = cv2.resize(label, dsize=(args.resize,args.resize), interpolation=cv2.INTER_CUBIC)
+            cv2.imwrite(os.path.join(args.out, '{}_mask.png'.format(imgno)), label)
+    
+    if args.filename is not None:
+        f.close()
+
+    sys.exit(0)        
+        
     image_names = [p[p.rfind('/')+1:-4] for p in filelist]
     # load image data into a 3d numpy array
     image_data = np.array([cv2.imread(p)[:,:,0] for p in filelist])

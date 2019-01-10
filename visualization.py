@@ -4,7 +4,7 @@ import visdom
 class Visualization:
     def __init__(self, title, env_name=None):
         if env_name is None:
-            env_name = str(datetime.now().strftime("%d-%m %Hh%M"))
+            env_name = "Lesion %s" % str(datetime.now().strftime("%d-%m %Hh%M"))
         self.env_name = env_name
         self.vis = visdom.Visdom(env=self.env_name)
         self.loss_win = None
