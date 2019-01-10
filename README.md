@@ -4,7 +4,7 @@ Task 1: Lesion Boundary Segmentation
 Task 2: Lesion Attribute Detection
 Task 3: Disease Classification
 
-#Task 1: Lesion Boundary Segmentation
+# Task 1: Lesion Boundary Segmentation
 
 A VGG-16 based FCN network was used to segment the lesion from other skin areas. An off-the-shelf imagenet trained VGG-16 model was outfitted with upsampling layers, skip connections and trained with weighted loss functions to achive fscores of 0.85.
 
@@ -14,9 +14,9 @@ A VGG-16 based FCN network was used to segment the lesion from other skin areas.
 - **Yellow**: False Negative (model missed nerve in the area)
 - **Green**: False Positive (model incorrectly predicted nerve in the area)
 
-![](out-good1.jpg)
-![](out-good2.jpg)
-![](out-miss1.jpg)
+![](out-good1.png)
+![](out-good2.png)
+![](out-miss1.png)
 
 ## Neural Net Architecture
 VGG-16 is a fairly simple deep network that is commonly used for image segmentation. Though VGG-16 is less accurate than the larger Resnet or Inception networks and slower than Mobilenets, its simple architecture lends itself to extension by adding additional layers, introducing skip-connections, etc.
