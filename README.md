@@ -6,13 +6,13 @@ Task 3: Disease Classification
 
 # Task 1: Lesion Boundary Segmentation
 
-A VGG-16 based FCN network was used to segment the lesion from other skin areas. An off-the-shelf imagenet trained VGG-16 model was outfitted with upsampling layers, skip connections and trained with weighted loss functions to achive fscores of 0.85.
+A VGG-16 based FCN network was used to segment the lesion from other skin areas. An off-the-shelf imagenet trained VGG-16 model was outfitted with upsampling layers, skip connections and trained with weighted loss functions to achive fscores of 0.89.
 
 ## Sample Results
 
-- **Purple**: True Positive (model prediction matches nerve area marked by human)
-- **Yellow**: False Negative (model missed nerve in the area)
-- **Green**: False Positive (model incorrectly predicted nerve in the area)
+- **Purple**: True Positive (model prediction matches lesion area marked by human)
+- **Blue**: False Negative (model missed part of lesion in the area)
+- **Green**: False Positive (model incorrectly predicted lesion in an area where there is none)
 
 ![](out-good1.png)
 ![](out-good2.png)
