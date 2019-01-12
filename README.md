@@ -15,16 +15,16 @@ In the combined image:
 - **Blue**: False Negative (model missed part of lesion in the area)
 - **Green**: False Positive (model incorrectly predicted lesion in an area where there is none)
 
-![](out-good1.png)
-![](out-good2.png)
-![](out-good3.png)
+![](./img/out-good1.png)
+![](./img/out-good2.png)
+![](./img/out-good3.png)
 
 ## Neural Net Architecture
 ResNet-50 is a deep network with batch norms and identity shortcut connections that let gradients propogate well during backward propogation. 2D transpose convolutions up-sample tensors back to the original image's dimensions. A sigmoid layer generates 0/1 monochromatic image mask, where pixels corresponding to positive predictions are 1, the rest are 0. To improve precision, higher resolution tensor output from lower layers in ResNet are concatenated with input to 2D transpose convolution layers. This results in preditctions with finer details.
 
 ### Model
 
-![](./resnet-fcn-model.png)
+![](./img/resnet-fcn-model.png)
 
 
 ### Loss Functions and Metrics
@@ -130,28 +130,28 @@ Through trial and error, I arrived at a learning rate of 1e-5. Further, I used p
 Metrics from training are sent to [Visdom](https://github.com/facebookresearch/visdom) server for visualization.
 
 ### Mean Training and Validation Losses
-![](losses.png)
+![](./img/losses.png)
 - <span style="color:orange">Orange: Validation loss</span> 
 - <span style="color:blue">Blue: Training loss</span> 
 
 ---
 
 ### IOU and Dice Coefficient improves with training
-![](iou,dice.png)
+![](./img/iou,dice.png)
 - <span style="color:orange">Orange: IOU</span>
 - <span style="color:blue">Blue: Dice coefficient</span>
 
 ---
 
 ### False Positives and False Negatives drop
-![](fpfn.png)
+![](./img/fpfn.png)
 - <span style="color:orange">Orange: False negatives</span>
 - <span style="color:blue">Blue: False positives</span>
 
 ---
 
 ### Precision, Recall and F1-Score improve with training
-![](fscore.png)
+![](./img/fscore.png)
 - <span style="color:orange">Orange: Recall</span>
 - <span style="color:blue">Blue: Precision</span>
 - <span style="color:green">Green: F1-score</span>
