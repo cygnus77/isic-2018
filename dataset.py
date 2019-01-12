@@ -42,11 +42,12 @@ class LesionDataset(data.Dataset):
     def __getitem__(self, idx):
         return self.inputimage(self.x[idx]), self.labelread(self.y[idx])
 
-def create_loaders(val_percent = 20, batch_size = 10):
     input_processor = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
+
+def create_loaders(val_percent = 20, batch_size = 10):
 
     filelist = glob.glob('./ISIC/train-resized/*_mask.png')
     val_items = val_percent*len(filelist)//100
@@ -54,14 +55,21 @@ def create_loaders(val_percent = 20, batch_size = 10):
     random.shuffle(filelist)
 
     validation_list = filelist[0: val_items]
-    val_dataset = LesionDataset(validation_list, input_processor)
+    val_dataset = LesionDataset(validation_list, LesionDataset.input_processor)
     val_loader = data.DataLoader(val_dataset, batch_size=batch_size, num_workers=2)
 
     train_list = filelist[val_items:]
-    train_dataset = LesionDataset(train_list, input_processor)
+    train_dataset = LesionDataset(train_list, LesionDataset.input_processor)
     train_loader = data.DataLoader(train_dataset, batch_size=batch_size, num_workers=2, shuffle=True)
 
     return (train_loader, val_loader)
+
+def create_eval_loader(batch_size):
+    filelist = glob.glob('./ISIC/train-resized/*_mask.png')
+    random.shuffle(filelist)
+    dataset = LesionDataset(filelist, LesionDataset.input_processor)
+    loader = data.DataLoader(dataset, batch_size=batch_size)
+    return loader
 
 if __name__ == "__main__":
     

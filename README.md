@@ -16,10 +16,10 @@ A ResNet50 based FCN network was used to segment the lesion from other skin area
 
 ![](out-good1.png)
 ![](out-good2.png)
-![](out-miss1.png)
+![](out-good3.png)
 
 ## Neural Net Architecture
-VGG-16 is a fairly simple deep network that is commonly used for image segmentation. Though VGG-16 is less accurate than the larger Resnet or Inception networks and slower than Mobilenets, its simple architecture lends itself to extension by adding additional layers, introducing skip-connections, etc.
+ResNet-50 is a deep network with batch norms and identity shortcut connections that let gradients propogate well during backward propogation. 2D transpose convolutions up-sample tensors back to the original image's dimensions. A sigmoid layer generates 0/1 monochromatic image mask, where pixels corresponding to positive predictions are 1, the rest are 0. To improve precision, higher resolution tensor output from lower layers in ResNet are concatenated with input to 2D transpose convolution layers. This results in preditctions with finer details.
 
 ### Model
 

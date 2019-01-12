@@ -54,7 +54,17 @@ class Net(nn.Module):
         x = x.view(x.size()[0], -1, Net.num_classes)
         
         return x
+    
+    def save(self, filename):
+        # write out weights
+        torch.save(self.state_dict(), filename)
+
+    def load(self, filename):
+        self.load_state_dict(torch.load(filename))
 
 if __name__ == "__main__":
     net = Net()
     net.freeze(['layer4'])
+    # write out weights
+    net.load('./output/output-resnet_01111617/ultrasound.pth')
+
