@@ -12,16 +12,17 @@ class Net(nn.Module):
         self.resnet = models.resnet50(pretrained=True)
         
         for i,param in enumerate(self.resnet.parameters()):
-            print(param)
             param.requires_grad = False
 
         self.a_convT2d = nn.ConvTranspose2d(in_channels=2048, out_channels=256, kernel_size=4, stride=2, padding=1)              
         self.b_convT2d = nn.ConvTranspose2d(in_channels=1280, out_channels=128, kernel_size=4, stride=4, padding=0)
         self.convT2d3 = nn.ConvTranspose2d(in_channels=384, out_channels=1, kernel_size=4, stride=4, padding=0)
     
-    def freeze(self, n):
-        for i,param in enumerate(self.resnet.parameters()):
-                param.requires_grad = i >= n
+    def freeze(self, frozen_layer_names):
+        for name, node in self.resnet.named_children():
+            unlock = name in frozen_layer_names
+            for param in node.parameters():
+                    param.requires_grad = unlock
     
     def forward(self, x):
 
@@ -54,3 +55,6 @@ class Net(nn.Module):
         
         return x
 
+if __name__ == "__main__":
+    net = Net()
+    net.freeze(['layer4'])

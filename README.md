@@ -6,7 +6,7 @@ Task 3: Disease Classification
 
 # Task 1: Lesion Boundary Segmentation
 
-A VGG-16 based FCN network was used to segment the lesion from other skin areas. An off-the-shelf imagenet trained VGG-16 model was outfitted with upsampling layers, skip connections and trained with weighted loss functions to achive fscores of 0.89.
+A ResNet50 based FCN network was used to segment the lesion from other skin areas. An off-the-shelf imagenet trained ResNet50 model was outfitted with upsampling layers, skip connections and trained with weighted loss functions to achive fscores of 0.89.
 
 ## Sample Results
 
@@ -23,7 +23,7 @@ VGG-16 is a fairly simple deep network that is commonly used for image segmentat
 
 ### Model
 
-![](./model.png)
+![](./resnet-fcn-model.png)
 
 
 ### Loss Functions and Metrics
