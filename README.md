@@ -10,6 +10,7 @@ A ResNet50 based FCN network was used to segment the lesion from other skin area
 
 ## Sample Results
 
+In the combined image:
 - **Purple**: True Positive (model prediction matches lesion area marked by human)
 - **Blue**: False Negative (model missed part of lesion in the area)
 - **Green**: False Positive (model incorrectly predicted lesion in an area where there is none)
