@@ -9,25 +9,10 @@ import torch.optim as optim
 from model_resnet import Net
 import dataset
 
-net = Net().cuda()
-net.load('./output/output-resnet_01111617/ultrasound.pth')
-net.eval()
-
-loader = dataset.create_eval_loader(batch_size = 10)
-
-print('size: %d' % len(loader) )
-
 IMAGE_HT = 224
 IMAGE_WD = 224
 
-dataiter = iter(loader)
-images, labels = dataiter.next()
-images = images.cuda()
-output = net(images)
-
-for idx in range(10):
-    x, y, label = images[idx], output[idx], labels[idx]
-    
+def saveResult(x, y, label, outputDir, idx):    
     y = y.reshape(IMAGE_HT, IMAGE_WD).cpu().detach().numpy()
     label = label.reshape(IMAGE_HT, IMAGE_WD).cpu().detach().numpy()
 
@@ -75,4 +60,25 @@ for idx in range(10):
 
     final = np.hstack(imgs)
 
-    cv2.imwrite('./output/resnet-%d.png'%idx, final)
+    cv2.imwrite(os.path.join(outputDir, '%d.png'%idx), final)
+
+def eval(model_filepath, output_dir):
+    net = Net().cuda()
+    net.load(model_filepath)
+    net.eval()
+
+    loader = dataset.create_eval_loader(batch_size = 10)
+
+    print('size: %d' % len(loader) )
+
+    dataiter = iter(loader)
+    images, labels = dataiter.next()
+    images = images.cuda()
+    output = net(images)
+
+    for idx in range(10):
+        x, y, label = images[idx], output[idx], labels[idx]
+        saveResult(x, y, label, output_dir, idx)
+
+if __name__ == "__main__":
+    eval('./output/output-resnet_01111617/ultrasound.pth', './output/test')

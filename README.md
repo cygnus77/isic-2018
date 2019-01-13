@@ -19,6 +19,19 @@ In the combined image:
 ![](./img/out-good2.png)
 ![](./img/out-good3.png)
 
+## Dataset
+The dataset, consisting of dermoscopic lesion images in JPEG format, was acquired from [ISIC-2018 challenge Task-1](https://challenge2018.isic-archive.com/task1/) web page.
+
+The dataset was augmented with the following steps to boost validation accuracy:
+- adding random streaks
+- randomly rotating image and corresponding mask
+- adding variations to image saturation and hue
+
+The data was preprocessed for training by:
+- scalling to 224x224x3
+- normalizing values to fall between [-1, 1], with to 0.5 mean and 0.5 std.dev.
+
+
 ## Neural Net Architecture
 ResNet-50 is a deep network with batch norms and identity shortcut connections that let gradients propogate well during backward propogation. 2D transpose convolutions up-sample tensors back to the original image's dimensions. A sigmoid layer generates 0/1 monochromatic image mask, where pixels corresponding to positive predictions are 1, the rest are 0. To improve precision, higher resolution tensor output from lower layers in ResNet are concatenated with input to 2D transpose convolution layers. This results in preditctions with finer details.
 
