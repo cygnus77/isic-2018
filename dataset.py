@@ -1,5 +1,6 @@
 import glob
 import random
+import csv
 import cv2
 import re
 import numpy as np
@@ -11,6 +12,9 @@ from torchvision.transforms.functional import _get_inverse_affine_matrix
 
 import math
 import matplotlib.pyplot as plt
+
+IMAGE_HT = 224
+IMAGE_WD = 224
 
 class RandomStreaks(object):
     def __init__(self):
@@ -59,19 +63,28 @@ class RandomSaturation(object):
         img = cv2.cvtColor(img, cv2.COLOR_HSV2RGB)
         return (img,item[1])
 
+class LesionImageSizes(object):
+    def __init__(self):
+        self.table={}
+        with open('./img_data.csv', 'r') as f:
+            rdr = csv.reader(f)
+            for row in rdr:
+                imgno = re.match('.*ISIC_(\\d*)\\.jpg', row[0]).group(1)
+                self.table[imgno] = (int(row[1]), int(row[2]))
+
+    def getSize(self, fname):
+        imgno = re.match('\\D*(\\d*)(_mask)?\\.png', fname).group(1)
+        return self.table[imgno]
+
 class LesionDataset(data.Dataset):
     highlighted_color = np.array([255, 255, 255])
     
     def __init__(self, mask_list, input_preprocessor, augment=False):
         super().__init__()
-        mask_notall_black = [x for x in mask_list if not self.isAllBlack(x)]
-        self.y = mask_notall_black
-        self.x = [grp.group(1)+grp.group(2) for grp in [re.match(r'(.*)_mask(\.png)', x) for x in mask_notall_black]]
+        self.y = mask_list
+        self.x = [grp.group(1)+grp.group(2) for grp in [re.match(r'(.*)_mask(\.png)', x) for x in mask_list]]
         self.input_preprocessor = input_preprocessor
         self.augment = augment
-        
-    def isAllBlack(self, x):
-        return np.all(self.imread(x)[:,:] == [0,0,0])
         
     def imread(self, file_name):
         return cv2.cvtColor(cv2.imread(file_name), cv2.COLOR_BGR2RGB)
@@ -96,7 +109,7 @@ class LesionDataset(data.Dataset):
             img,tgt = RandomAffine()((img,tgt))
             img,tgt = RandomSaturation()((img,tgt))
 
-        return self.input_preprocessor(img), self.labelcvt(tgt)
+        return self.input_preprocessor(img), self.labelcvt(tgt), self.y[idx]
 
     input_processor = transforms.Compose([
         transforms.ToTensor(),
@@ -129,10 +142,13 @@ def create_eval_loader(batch_size):
 
 if __name__ == "__main__":
 
-    images, labels = iter(create_eval_loader(10)).next()
+    sizeLookup = LesionImageSizes()
 
+    images, labels, fnames = iter(create_eval_loader(10)).next()
     
     for i in range(10):
+        print(fnames[i], sizeLookup.getSize(fnames[i]))
+
         img = images[i].cpu().detach().numpy()
         label = labels[i].cpu().detach().numpy().reshape(224,224)
 

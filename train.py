@@ -3,7 +3,9 @@ import numpy as np
 def validate(data_loader, net, criterion, measures, epoch):
     val_loss = 0.
     measurements = {k:0. for k in measures.keys()}
-    for i, (inputs, labels) in enumerate(data_loader, 0):
+    for i, items in enumerate(data_loader, 0):
+        inputs = items[0]
+        labels = items[1]
         print("Validating epoch %d: batch # %d" % (epoch, i), end='\r')
         # map to gpu
         inputs, labels = inputs.cuda(), labels.cuda()
@@ -27,7 +29,11 @@ def fit(net, train_loader, val_loader, criterion, optimizer, lrscheduler, measur
     train_loss = 0.
     epoch_size = len(train_loader)
     losses=[]
-    for i, (inputs, labels) in enumerate(train_loader, 0):
+    for i, items in enumerate(train_loader, 0):
+
+        inputs = items[0]
+        labels = items[1]
+
         print("Training epoch %d: batch # %d" % (epoch, i), end='\r')
         # map to gpu
         inputs, labels = inputs.cuda(), labels.cuda()
