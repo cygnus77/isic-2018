@@ -5,10 +5,10 @@ import torch.nn as nn
 import torchvision.models as models
 
 class Net(nn.Module):
-    num_classes = 1
-    
-    def __init__(self):
+
+    def __init__(self, num_classes = 1):
         super(Net, self).__init__()
+        self.num_classes = num_classes
         self.resnet = models.resnet50(pretrained=True)
         
         for i,param in enumerate(self.resnet.parameters()):
@@ -16,7 +16,7 @@ class Net(nn.Module):
 
         self.a_convT2d = nn.ConvTranspose2d(in_channels=2048, out_channels=256, kernel_size=4, stride=2, padding=1)              
         self.b_convT2d = nn.ConvTranspose2d(in_channels=1280, out_channels=128, kernel_size=4, stride=4, padding=0)
-        self.convT2d3 = nn.ConvTranspose2d(in_channels=384, out_channels=1, kernel_size=4, stride=4, padding=0)
+        self.convT2d3 = nn.ConvTranspose2d(in_channels=384, out_channels=self.num_classes, kernel_size=4, stride=4, padding=0)
     
     def freeze(self, frozen_layer_names):
         for name, node in self.resnet.named_children():
@@ -51,7 +51,7 @@ class Net(nn.Module):
         x = self.convT2d3(x) # [10, 1, 224, 224]
 
         x = nn.Sigmoid()(x)
-        x = x.view(x.size()[0], -1, Net.num_classes)
+        x = x.view(x.size()[0], -1, self.num_classes)
         
         return x
     

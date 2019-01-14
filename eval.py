@@ -16,7 +16,7 @@ class Evaluator(object):
         self.net = Net().cuda()
         self.net.load(model_filepath)
         self.net.eval()
-        self.imagesizes = dataset.LesionImageSizes()
+        self.lesionData = dataset.LesionData()
         if not os.path.exists(outputDir):
             os.mkdir(outputDir)
 
@@ -76,13 +76,13 @@ class Evaluator(object):
         y = y.reshape(dataset.IMAGE_HT, dataset.IMAGE_WD).cpu().detach().numpy()
         mask = np.zeros_like(y, dtype=np.uint8)
         mask[y>0.75] = 255
-        size = self.imagesizes.getSize(fname)
+        size = self.lesionData.getShape(fname)[0:1]
         mask = cv2.resize(mask, size, cv2.INTER_CUBIC)
         cv2.imwrite(os.path.join(self.outputDir, os.path.split(fname)[1]), mask)
 
     def run(self, annotate=True, save_mask=True):
         
-        loader = dataset.create_eval_loader(batch_size = 10)
+        loader = self.lesionData.getTask1EvalDataLoader(batch_size = 10)
 
         print('size: %d' % len(loader) )       
 
@@ -97,7 +97,7 @@ class Evaluator(object):
                     self._saveMask(y, fname)
 
     def sample(self):
-        loader = dataset.create_eval_loader(batch_size = 10)
+        loader = self.lesionData.getTask1EvalDataLoader(batch_size = 10)
         images, labels, fnames = iter(loader).next()
         images = images.cuda()
         output = self.net(images)
