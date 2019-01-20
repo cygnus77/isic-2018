@@ -38,6 +38,15 @@ class Task():
         for proc in procs:
             proc.join()
 
+        if self.args.filename:
+            with open(args.filename, 'w') as fout:
+                for id in range(self.args.num_procs):
+                    fname = re.sub('\\.csv', '_%d.csv'%id, self.args.filename)
+                    with open(fname, 'r') as fin:
+                        fout.write(fin.read())
+                    os.unlink(fname)
+
+
 
     def run(self, id):
         if self.args.resize is not None:
