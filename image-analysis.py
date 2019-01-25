@@ -172,7 +172,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if args.function == 'store':
+    if args.function == 'scan':
         ScanTask(args).start()
     
     elif args.function == 'count':
