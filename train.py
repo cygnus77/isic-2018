@@ -6,7 +6,7 @@ def validate(data_loader, net, criterion, measures, epoch):
     for i, items in enumerate(data_loader, 0):
         inputs = items[0]
         labels = items[1]
-        print("Validating epoch %d: batch # %d" % (epoch, i), end='\r')
+        print("Validating epoch %d: batch # %d      " % (epoch, i), end='\r')
         # map to gpu
         inputs, labels = inputs.cuda(), labels.cuda()
 
@@ -34,7 +34,7 @@ def fit(net, train_loader, val_loader, criterion, optimizer, lrscheduler, measur
         inputs = items[0]
         labels = items[1]
 
-        print("Training epoch %d: batch # %d" % (epoch, i), end='\r')
+        print("Training epoch %d: batch # %d        " % (epoch, i), end='\r')
         # map to gpu
         inputs, labels = inputs.cuda(), labels.cuda()
 
@@ -43,7 +43,7 @@ def fit(net, train_loader, val_loader, criterion, optimizer, lrscheduler, measur
 
         # forward + backward + optimize
         outputs = net(inputs)
-        loss = criterion(outputs, labels)
+        loss = criterion(labels, outputs)
         loss.backward()
         optimizer.step()
         
@@ -58,7 +58,8 @@ def fit(net, train_loader, val_loader, criterion, optimizer, lrscheduler, measur
             val_loss, measurements = validate(val_loader, net, criterion, measures, epoch)
             loss_vis.plot_loss(val_loss, (epoch_size * epoch) + i, 'val_loss')
             net.train(True)
-            lrscheduler.step(val_loss)
+            if lrscheduler:
+                lrscheduler.step(val_loss)
             
             for k in measures.keys():
                 measures[k][1].plot_loss(measurements[k], (epoch_size * epoch) + i, k)

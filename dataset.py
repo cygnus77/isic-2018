@@ -36,7 +36,7 @@ class RandomAffine(object):
     def __init__(self):
         self.angle = random.randint(-180, 180)
         self.scale = 1./(1. + random.random())
-        self.shear = random.randint(0,30)
+        self.shear = 0 #random.randint(0,30)
         pass
 
     def __call__(self, item):
@@ -94,13 +94,13 @@ class LesionDataset(data.Dataset):
         item = [self.imread(self.x[idx])] + [self.imread(y) for y in self.y[idx]]
  
         if self.augment:
-            item = RandomStreaks()(item)
+            #item = RandomStreaks()(item)
             item = RandomAffine()(item)
-            item = RandomSaturation()(item)
+            #item = RandomSaturation()(item)
 
         x = self.input_preprocessor(item[0])
         if len(item) > 2:
-            y = np.dstack([self.labelcvt(tgt) for tgt in item[1:]])
+            y = np.dstack([self.labelcvt(tgt) for tgt in item[1:]]).squeeze()
         else:
             y = self.labelcvt(item[1])
 
@@ -170,7 +170,7 @@ class LesionData(object):
         train_imgnos = imgnos[numval:]
         train_x = ['./ISIC/train-resized/roi_{}.png'.format(n) for n in train_imgnos]
         train_y = [['./ISIC/train-resized/roi_{}_mask_{}.png'.format(n,j) for j in range(5)] for n in train_imgnos]
-        train_dataset = LesionDataset(val_x, val_y, val_imgnos, LesionDataset.input_processor, augment=augment)
+        train_dataset = LesionDataset(train_x, train_y, train_imgnos, LesionDataset.input_processor, augment=augment)
 
         return (data.DataLoader(train_dataset, batch_size=batch_size, num_workers=2, shuffle=True),
             data.DataLoader(val_dataset, batch_size=batch_size, num_workers=2))

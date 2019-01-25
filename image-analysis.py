@@ -25,7 +25,6 @@ class Task():
         for proc in procs:
             proc.start()
 
-
         # write items to queue
         for f in filelist:
             self.fileQueue.put(f)
@@ -38,6 +37,7 @@ class Task():
         for proc in procs:
             proc.join()
 
+        # merge outputs
         if self.args.filename:
             with open(args.filename, 'w') as fout:
                 for id in range(self.args.num_procs):
@@ -78,6 +78,7 @@ class Task():
     def getFileList(self):
         return []
 
+# Scan: list image dimensions, resize training and label image for task1. crop ROI, resize to 224x224 for task 2
 class ScanTask(Task):
     def __init__(self, args):
         super().__init__(args)
@@ -142,7 +143,7 @@ class ScanTask(Task):
 
         return rowdata
 
-
+# Count: count pixels in mask images
 class CountTask(Task):
     def __init__(self, args):
         super().__init__(args)
@@ -171,12 +172,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    task = None
     if args.function == 'store':
-        task = ScanTask(args)
+        ScanTask(args).start()
     
     elif args.function == 'count':
-        task = CountTask(args)
-    
-    if task:
-        task.start()
+        CountTask(args).start()
+

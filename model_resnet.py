@@ -15,12 +15,13 @@ class Net(nn.Module):
             param.requires_grad = False
 
         self.a_convT2d = nn.ConvTranspose2d(in_channels=2048, out_channels=256, kernel_size=4, stride=2, padding=1)              
-        self.b_convT2d = nn.ConvTranspose2d(in_channels=1280, out_channels=128, kernel_size=4, stride=4, padding=0)
-        self.convT2d3 = nn.ConvTranspose2d(in_channels=384, out_channels=self.num_classes, kernel_size=4, stride=4, padding=0)
+        self.b_convT2d = nn.ConvTranspose2d(in_channels=1280, out_channels=128, kernel_size=4, stride=2, padding=1)
+        self.c_convT2d = nn.ConvTranspose2d(in_channels=640, out_channels=64, kernel_size=4, stride=2, padding=1)
+        self.convT2d3 = nn.ConvTranspose2d(in_channels=320, out_channels=self.num_classes, kernel_size=4, stride=4, padding=0)
     
-    def freeze(self, frozen_layer_names):
+    def setTrainableLayers(self, trainable_layers):
         for name, node in self.resnet.named_children():
-            unlock = name in frozen_layer_names
+            unlock = name in trainable_layers
             for param in node.parameters():
                     param.requires_grad = unlock
     
@@ -44,11 +45,15 @@ class Net(nn.Module):
 
         x = torch.cat((x,skipConnections[3]), 1)
         
-        x = self.b_convT2d(x) # [10, 128, 56, 56]
+        x = self.b_convT2d(x) # [10, 128, 28, 28]
+
+        x = torch.cat((x, skipConnections[2]), 1)
+
+        x = self.c_convT2d(x) # [10, 64, 56, 56]
 
         x = torch.cat((x, skipConnections[1]), 1)
 
-        x = self.convT2d3(x) # [10, 1, 224, 224]
+        x = self.convT2d3(x) # [10, num_classes, 224, 224]
 
         x = nn.Sigmoid()(x)
         x = x.view(x.size()[0], -1, self.num_classes)

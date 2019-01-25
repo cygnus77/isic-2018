@@ -170,3 +170,26 @@ Metrics from training are sent to [Visdom](https://github.com/facebookresearch/v
 - <span style="color:green">Green: F1-score</span>
 
 ---
+
+
+# Task 2: Lesion Attributes
+
+## Dataset:
+
+Total numer of images: 2594
+
+
+| Mask Type | Mask Code | Number of blank images | % Blank images | Pixel Ratio (Ones / Ones + Zeroes) |
+|---|---|---|---|---|
+| Pigment network | 0 | 1992 |  77 | 0.0309 |
+| Negative network | 1 | 1915 | 74 | 0.01272 |
+| Streaks | 2 | 2405 |  93 | 0.0067 |
+| Milia like cyst | 3 | 1072 | 41 | 0.1370 |
+| Globules | 4 | 2494 | 96 | 0.0042 |
+
+Dataset is severely imbalanced, with very few instances of globules (100) and streaks (189) compared to the others. And with most of them, more than 75% of the masks are entirely blank.
+
+Even in the images where they do appear, the relative sizes are small.
+This calls for augmenting the dataset considerably to boost the number of instances, specifically those of globules and streaks.
+
+

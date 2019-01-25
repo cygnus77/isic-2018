@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            //"args": ["-scan", "-resize"]
+            "args": ["count", "-filename", "imgcounts.csv"]
         },
         {
             "name": "Python: Attach",
